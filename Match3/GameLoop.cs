@@ -65,36 +65,54 @@ public class GameLoop
                         _config.CommandRegistry,
                         out var commands))
                 {
+                    // failed to parse, keep reading for a valid command text
                     continue;
                 }
 
                 previous = active;
-                active = active.Offset(1, 0);
 
+                // automatically moves down by one row at end of the frame
+                // so we evaluate taking that into consideration
+                active = active.Offset(row: 1, column: 0);
+
+                // generate change set for clearing previous brick
+                // apply the chaneg set
                 var spawnBrickChangeSet = ClearSelfChangeSetGenerator.Instatnce.Generate(previous);
                 board.Apply(spawnBrickChangeSet);
 
+                // iteratte ove each command
                 foreach (var command in commands)
                 {
+                    // generate change set for this command
                     var changeSet = command.Generator.Generate(board, active);
 
+                    // validate change set
                     if (!board.Validate(changeSet))
                     {
+                        // failed validation, ignore this command
                         continue;
                     }
 
+                    // derive target brcik from change set
+                    // this it the new active brick
                     active = new Brick(
                         active.Orientation,
                         changeSet.Writes.Select(x => new Cell(new Position(x.Row, x.Column), x.Symbol)).ToList());
 
+                    // apply change set
                     _session.Board.Apply(changeSet);
                 }
 
+                // once all commnds are applied, we check whether it is settled
                 if (_session.Board.IsConnected(active))
                 {
+                    // commit settled brick
                     board.Settle(active);
+
+                    // signal to exit loop, so the next brick can be fetched
                     settled = true;
 
+                    // good time to identify matching cells
                     var foundMatches = _matchFinder.TryFindMatches(
                         minMatchLength: 3,
                         allowedSymbols: _config.GameRules.AllowedSymbols,
@@ -103,15 +121,16 @@ public class GameLoop
 
                     if (foundMatches)
                     {
+                        // matches found, generate change set to clear them
                         var matchesChangeSet = ClearMatchesChangeSetGenerator.Instatnce.Generate(
                             matches, _config.EmptyCellSymbol);
 
+                        // clear the matches by applying change set
                         board.Apply(matchesChangeSet);
                     }
-
-                    //break;
                 }
 
+                // render frame once per set of commands
                 _frameRenderer.Render(++frameNumber, board);
             }
         }
