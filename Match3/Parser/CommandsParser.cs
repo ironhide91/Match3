@@ -15,6 +15,7 @@ public static class CommandsParser
 
         if (string.IsNullOrWhiteSpace(input))
         {
+            // indiactes a blank command
             input = " ";
         }
 

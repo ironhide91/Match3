@@ -80,6 +80,14 @@ public sealed class Board : IReadOnlyBoard, IDisposable
             Set(change.Row, change.Column, change.Symbol);
     }
 
+    public void UnSettleMatches(IReadOnlySet<Position> matches)
+    {
+        foreach (var match in matches)
+        {
+            _settled.Remove(match);
+        }
+    }
+
     public bool IsConnected(Brick active)
     {
         bool touches = false;

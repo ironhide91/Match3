@@ -127,6 +127,12 @@ public class GameLoop
 
                         // clear the matches by applying change set
                         board.Apply(matchesChangeSet);
+
+                        // unsettle matches
+                        var positions = matchesChangeSet.Writes
+                            .Select(x => new Position(x.Row, x.Column))
+                            .ToHashSet();
+                        board.UnSettleMatches(positions);
                     }
                 }
 
