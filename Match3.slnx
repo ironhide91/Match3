@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Match3.App/Match3.App.csproj" />
+  <Project Path="Match3/Match3.csproj" />
+</Solution>
