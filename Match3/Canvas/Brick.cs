@@ -1,37 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Match3.Canvas;
 
-public sealed class Brick
+public sealed record Brick(Orientation Orientation, IReadOnlyList<Cell> Cells)
 {
-    private readonly Orientation _orientation;
-    private readonly IReadOnlyList<Cell> _cells;
+    public Brick Offset(int rowDelta, int colDelta) =>
+        new(Orientation, Cells.Select(c => c.Offset(rowDelta, colDelta)).ToArray());
 
-    public Orientation Orientation => _orientation;
-
-    public IReadOnlyList<Cell> Cells => _cells;
-
-    public Brick(Orientation orientation, IReadOnlyList<Cell> cells)
+    public Brick PlaceAtSpawn(int boardWidth)
     {
-        if (cells == null)
-        {
-            throw new ArgumentNullException(nameof(cells));
-        }
+        var minRow = Cells.Min(c => c.Position.Row);
+        var minCol = Cells.Min(c => c.Position.Column);
+        var maxCol = Cells.Max(c => c.Position.Column);
 
-        _cells = [.. cells];
+        var brickWidth = maxCol - minCol + 1;
+        var targetLeftCol = (boardWidth - brickWidth) / 2;
 
-        if (_cells.Count == 0)
-        {
-            throw new ArgumentException("A brick must contain at least one cell.");
-        }
-
-        _orientation = orientation;
-    }
-
-    public Brick Offset(int row, int column)
-    {
-        return new Brick(_orientation, _cells.Select(cell => cell.Offset(row, column)).ToList());
+        return Offset(rowDelta: -minRow, colDelta: targetLeftCol - minCol);
     }
 }

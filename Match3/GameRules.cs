@@ -4,6 +4,8 @@ namespace Match3;
 
 public sealed record GameRules(
     int CommandsPerFrame,
-    int BrickLength,
+    int MaxBrickLength,
     int MaxBricks,
-    IReadOnlySet<char> AllowedSymbols);
+    char EmptyCellSymbol,
+    IReadOnlySet<char> AllowedSymbols,
+    int MinMatchLength = 3);

@@ -2,9 +2,6 @@
 
 namespace Match3.Cli;
 
-/// <summary>
-/// 
-/// </summary>
 public class SystemConsole : IConsole
 {
     public string ReadLine()
