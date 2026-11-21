@@ -13,14 +13,4 @@
     <None Remove="Session\**" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="Match\ClearMatchesChangeSetGenerator.cs" />
-    <Compile Remove="Match\IMatchFinder.cs" />
-    <Compile Remove="Match\MatchFinder1.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Match\" />
-  </ItemGroup>
-
 </Project>
